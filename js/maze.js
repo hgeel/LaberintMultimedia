@@ -25,7 +25,7 @@ MAZE_IMG.onload = function() {
     canvas.height = MAZE_IMG.height;
     MAZE_TILES = MAZE_IMG.width / TILE_SIZE;
     init();
-    setInterval(loop, 1000/60);
+    setInterval(loop, 1000/90);
 };
 
 MAZE_IMG.src = MAZE_IMG_PATH;
@@ -74,6 +74,11 @@ function movePlayer() {
                 PLAYER_POS.y -= 1;
         }
     }
+    if(PLAYER_POS.x == END.x * TILE_SIZE && PLAYER_POS.y == END.y * TILE_SIZE) {
+        pf_autopilot = false;
+        alert("S'ha completat el laberint.");
+        location.reload();
+    }
 }
 
 function isWall(x, y) {
@@ -84,16 +89,16 @@ function isWall(x, y) {
 function isPlayerCollision(side) {
     var imgData;
     if(side == SIDE.UP) {
-        if(PLAYER_POS.y - 1 < 0) return true;
+        if(PLAYER_POS.y - 1 < TILE_SIZE) return true;
         imgData = g.getImageData(PLAYER_POS.x, PLAYER_POS.y - 1, TILE_SIZE, 1);
     } else if(side == SIDE.DOWN) {
-        if(PLAYER_POS.y + TILE_SIZE > canvas.height) return true;
+        if(PLAYER_POS.y + (TILE_SIZE * 2) > canvas.height) return true;
         imgData = g.getImageData(PLAYER_POS.x, PLAYER_POS.y + TILE_SIZE, TILE_SIZE, 1);
     } else if(side == SIDE.RIGHT) {
-        if(PLAYER_POS.x + TILE_SIZE > canvas.width) return true;
+        if(PLAYER_POS.x + (TILE_SIZE * 2) > canvas.width) return true;
         imgData = g.getImageData(PLAYER_POS.x + TILE_SIZE, PLAYER_POS.y, 1, TILE_SIZE);
     } else if(side == SIDE.LEFT) {
-        if(PLAYER_POS.x - 1 < 0) return true;
+        if(PLAYER_POS.x - 1 < TILE_SIZE) return true;
         imgData = g.getImageData(PLAYER_POS.x - 1, PLAYER_POS.y, 1, TILE_SIZE);
     }
     for(var i = 0; i < imgData.data.length; i+=4) {
@@ -229,7 +234,7 @@ function pf_drawProgress() {
     for(var x = 0; x < MAZE_TILES; x++) {
         for(var y = 0; y < MAZE_TILES; y++) {
             if(pf_indices[x][y] > 0) {
-                g.fillStyle = "hsl(" + pf_indices[x][y] * 3 + ", 100%, 20%)";
+                g.fillStyle = "hsl(" + pf_indices[x][y] / 2 + ", 100%, 20%)";
                 g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
@@ -298,8 +303,6 @@ function pf_movePlayer() {
     }
     PLAYER_POS.x += pf_speed.x;
     PLAYER_POS.y += pf_speed.y;
-    if(PLAYER_POS.x == END.x * TILE_SIZE && PLAYER_POS.y == END.y * TILE_SIZE)
-        pf_autopilot = false;
 }
 
 function pf_isPath(side) {
