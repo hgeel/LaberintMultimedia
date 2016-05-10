@@ -298,6 +298,8 @@ function pf_movePlayer() {
     }
     PLAYER_POS.x += pf_speed.x;
     PLAYER_POS.y += pf_speed.y;
+    if(PLAYER_POS.x == END.x * TILE_SIZE && PLAYER_POS.y == END.y * TILE_SIZE)
+        pf_autopilot = false;
 }
 
 function pf_isPath(side) {
