@@ -25,7 +25,7 @@ MAZE_IMG.onload = function() {
     canvas.height = MAZE_IMG.height;
     MAZE_TILES = MAZE_IMG.width / TILE_SIZE;
     init();
-    setInterval(loop, 1);
+    setInterval(loop, 1000/60);
 };
 
 MAZE_IMG.src = MAZE_IMG_PATH;
@@ -33,18 +33,17 @@ MAZE_IMG.src = MAZE_IMG_PATH;
 var debug_solve = false;
 
 function loop() {
+    movePlayer();
     g.drawImage(MAZE_IMG, 0, 0);
-    if(pf_solved)
-        pf_drawPath();
-    else {
-        if (debug_solve) {
-            if(pf_solved) debug_solve = false;
+    if(debug_solve) {
+        if(pf_solved) {
+            pf_drawPath();
+        } else {
             pf_nextStep();
             pf_drawProgress();
         }
     }
-    movePlayer();
-    g.fillStyle = "#F0F";
+    g.fillStyle = "#40F";
     g.fillRect(PLAYER_POS.x, PLAYER_POS.y, TILE_SIZE, TILE_SIZE);
 }
 
@@ -156,11 +155,21 @@ $(document).keyup(function(e) {
             PLAYER_SPEED.x = 0;
             break;
         case KEY.SOLVE:
-            pf_solve();
+            console.log("Solve key was pressed.");
+            if(e.shiftKey == true) {
+                console.log("Shift key was pressed.");
+                debug_solve = true;
+            } else {
+                console.log("Shift key was not pressed.");
+                pf_solve();
+            }
     }
 });
 
 /*==============PATHFINDING (PF)=============*/
+/*
+    Pathfinding algorithm inspired by this one: http://codepen.io/clindsey/pen/yNvYxE
+ */
 var pf_solved = false;
 var pf_autopilot = false;
 var pf_currentIndex = 0;
@@ -240,6 +249,7 @@ function pf_generatePath() {
         index--;
     }
     pf_path_tiles.push({x: x, y: y});
+    pf_autopilot = true;
 }
 
 function pf_drawPath() {
@@ -250,8 +260,61 @@ function pf_drawPath() {
     }
 }
 
+var pf_speed = {x: 1, y: 0};
 function pf_movePlayer() {
+    pf_drawPath();
+    if(pf_speed.x == 1 && !pf_isPath(SIDE.RIGHT)) {
+        pf_speed.x = 0;
+        if(pf_isPath(SIDE.UP)) {
+            pf_speed.y = -1;
+        } else if(pf_isPath(SIDE.DOWN)) {
+            pf_speed.y = 1;
+        }
+    } else if(pf_speed.y == 1 && !pf_isPath(SIDE.DOWN)) {
+        pf_speed.y = 0;
+        if(pf_isPath(SIDE.RIGHT)) {
+            pf_speed.x = 1;
+        } else if(pf_isPath(SIDE.LEFT)) {
+            pf_speed.x = -1;
+        }
+    } else if(pf_speed.x == -1 && !pf_isPath(SIDE.LEFT)) {
+        pf_speed.x = 0;
+        if(pf_isPath(SIDE.UP)) {
+            pf_speed.y = -1;
+        } else if(pf_isPath(SIDE.DOWN)) {
+            pf_speed.y = 1;
+        }
+    } else if(pf_speed.y == -1 && !pf_isPath(SIDE.UP)) {
+        pf_speed.y = 0;
+        if(pf_isPath(SIDE.RIGHT)) {
+            pf_speed.x = 1;
+        } else if(pf_isPath(SIDE.LEFT)) {
+            pf_speed.x = -1;
+        }
+    }
+    PLAYER_POS.x += pf_speed.x;
+    PLAYER_POS.y += pf_speed.y;
+}
 
+function pf_isPath(side) {
+    var imgData;
+    if(side == SIDE.RIGHT) {
+        imgData = g.getImageData(PLAYER_POS.x + TILE_SIZE, PLAYER_POS.y, 1, TILE_SIZE);
+    } else if(side == SIDE.LEFT) {
+        imgData = g.getImageData(PLAYER_POS.x - 1, PLAYER_POS.y, 1, TILE_SIZE);
+    } else if(side == SIDE.UP) {
+        imgData = g.getImageData(PLAYER_POS.x, PLAYER_POS.y - 1, TILE_SIZE, 1);
+    } else if(side == SIDE.DOWN) {
+        imgData = g.getImageData(PLAYER_POS.x, PLAYER_POS.y + TILE_SIZE, TILE_SIZE, 1);
+    }
+
+    for(var i = 0; i < imgData.data.length; i+=4) {
+        if(imgData.data[i] != 255 || imgData.data[i+1] != 0 || imgData.data[i+2] != 0) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function pf_solve() {
