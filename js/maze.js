@@ -163,6 +163,10 @@ $(document).keyup(function(e) {
                 console.log("Shift key was not pressed.");
                 pf_solve();
             }
+            if(!pf_autopilot) {
+                PLAYER_POS.x = START.x * TILE_SIZE;
+                PLAYER_POS.y = START.y * TILE_SIZE;
+            }
     }
 });
 
