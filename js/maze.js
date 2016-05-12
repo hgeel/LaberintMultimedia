@@ -3,10 +3,9 @@ var g = canvas.getContext('2d');
 
 var TILE_SIZE = 8;
 
-//var MAZE_INDEX = 3;
+//var MAZE_INDEX = 70;
 var MAZE_INDEX = Math.floor((Math.random() * 19) + 1);
 var MAZE_IMG_PATH = "img/maze (" + MAZE_INDEX + ").gif";
-//var MAZE_IMG_PATH = "img/maze_big.gif";
 var MAZE_TILES;
 var MAZE_IMG = new Image();
 
@@ -184,6 +183,7 @@ var pf_autopilot = false;
 var pf_currentIndex = 0;
 var pf_indices = [];
 var pf_path_tiles = [];
+var pf_path_imgData;
 
 function pf_init() {
     for(var i = 0; i  < MAZE_TILES; i++) {
@@ -234,7 +234,7 @@ function pf_drawProgress() {
     for(var x = 0; x < MAZE_TILES; x++) {
         for(var y = 0; y < MAZE_TILES; y++) {
             if(pf_indices[x][y] > 0) {
-                g.fillStyle = "hsl(" + pf_indices[x][y] / 2 + ", 100%, 20%)";
+                g.fillStyle = "hsl(" + pf_indices[x][y] / 2.5 + ", 100%, 20%)";
                 g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
