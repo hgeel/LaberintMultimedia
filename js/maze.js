@@ -164,11 +164,9 @@ $(document).keyup(function(e) {
             } else {
                 if(!debug_solve) {
                     pf_solve();
+                    PLAYER_POS.x = START.x * TILE_SIZE;
+                    PLAYER_POS.y = START.y * TILE_SIZE;
                 }
-            }
-            if(!pf_autopilot) {
-                PLAYER_POS.x = START.x * TILE_SIZE;
-                PLAYER_POS.y = START.y * TILE_SIZE;
             }
     }
 });
