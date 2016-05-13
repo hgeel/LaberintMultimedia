@@ -159,13 +159,12 @@ $(document).keyup(function(e) {
             PLAYER_SPEED.x = 0;
             break;
         case KEY.SOLVE:
-            console.log("Solve key was pressed.");
             if(e.shiftKey == true) {
-                console.log("Shift key was pressed.");
                 debug_solve = true;
             } else {
-                console.log("Shift key was not pressed.");
-                pf_solve();
+                if(!debug_solve) {
+                    pf_solve();
+                }
             }
             if(!pf_autopilot) {
                 PLAYER_POS.x = START.x * TILE_SIZE;
